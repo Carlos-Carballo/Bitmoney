@@ -1,0 +1,212 @@
+import datetime as dt
+from datetime import datetime, timedelta
+import pandas as pd 
+import numpy as np
+from pandas.tseries.holiday import USFederalHolidayCalendar as calendar
+import plotly.plotly as py
+import plotly.graph_objs as go
+import plotly
+plotly.tools.set_credentials_file(username='maryichelo1017', api_key='V8wzzUDUqZt2qnlulipY')
+
+nombreBolsa=''
+nombreBolsa=input("Nombre de la bolsa ")
+try:
+    df=pd.read_csv('data/'+nombreBolsa+'.csv', parse_dates=True, index_col=0)
+
+    fechadesde = dt.datetime(2007, 1, 1)
+    fechahasta = dt.datetime(2018, 3, 29)
+    print("Fechas")
+    print(fechadesde)
+    print(fechahasta)
+    print("-----------")
+    diferenciaFechas = fechahasta - fechadesde
+    print("¿Cuántos días hay entre fechas?")
+    print(diferenciaFechas)
+    dr = pd.date_range(start=fechadesde, end=fechahasta)
+    dft = pd.DataFrame()
+    dft['Date'] = dr
+    dftTotal= pd.DataFrame()
+    dftTotal['Date'] = dr
+    cal = calendar()
+    holidays = cal.holidays(start=dr.min(), end=dr.max())
+    #Quitar de las fechas totales los dias festivos
+    dftTotal['Holiday'] = dftTotal['Date'].isin(holidays)
+    dftTotal = dftTotal.drop(dftTotal[dftTotal['Holiday']==True].index)
+
+    dft['Holiday'] = dft['Date'].isin(holidays)
+    dft = dft.drop(dft[dft['Holiday']==False].index)
+
+    datesHoliday=dft[dft['Holiday']]
+    contadorFestivos=datesHoliday['Date'].count()
+    print("¿Cuántos días festivos en total?")
+    print(contadorFestivos)
+
+    datesHoliday.replace({'Holiday': {True: "presente", False: "falta"}},  inplace = True)
+
+    datesHoliday = datesHoliday.rename_axis(None)
+    datesHoliday.reset_index()
+    formato = "%Y-%m-%d" 
+    formato2='%Y-%m-%d %H:%M:%S'      
+    fechadesde = "2007-1-1"
+    fechahasta = "2018-3-29"    
+    fechadesde = datetime.strptime(fechadesde, formato)
+    fechahasta = datetime.strptime(fechahasta, formato)    
+    contFinesT=0
+    listFinesSemanaTotales=[]
+    while fechadesde <= fechahasta:
+        if datetime.weekday(fechadesde) == 5 or datetime.weekday(fechadesde) == 6 : 
+            contFinesT +=1
+            fechaactual = fechadesde.strftime(formato2)
+            for i in range(contadorFestivos):
+                fechaactual2 = datesHoliday.iloc[i,0].strftime(formato2)
+                if(fechaactual==fechaactual2):
+                    contFinesT -=1
+                    print(contFinesT, fechaactual, 'es fin y festivo')
+            listFinesSemanaTotales.append(fechaactual)
+        fechadesde = fechadesde + timedelta(days=1)
+
+    FinesSemanaTotales=pd.DataFrame(np.array(listFinesSemanaTotales), columns=['Dates'])
+    print("¿Cuántos días Fines de semana en total?")
+    print(contFinesT)
+    registrosEsperados=diferenciaFechas.days-contFinesT
+    print("¿Cuántos días DEBE tener el archivo ?")
+    print(registrosEsperados)
+
+    cont=0
+    contDiasFestivos=0
+    diasFestivosLista=[]
+    listFinesSemana=[]
+    contD=0
+    totRegistros=0
+    datosFaltantes=0
+    for r in df.index:
+        try:
+            a = r.year
+            m = r.month
+            d = r.day
+            fecha = dt.date(a, m, d)
+            dia=fecha.strftime('%A').upper()
+            for i in range(contadorFestivos):
+                if(r==datesHoliday.iloc[i,0]):
+                    contDiasFestivos+=1
+                    diasFestivosLista.append(r)
+            if(dia=='SATURDAY' or dia=='SUNDAY'):
+                cont=cont+1
+                listFinesSemana.append(contD)
+                selectorFin=fecha
+            contD=contD+1
+        except:
+            print("No hay fecha")
+            continue
+        totRegistros=totRegistros+1
+    datosFaltantes=registrosEsperados-totRegistros
+    print("---En el archivo---")
+    #Se tienen 2 pandas 1 con los días festivos encontrados
+    #Otro con los días fines de semana (Siempre esta vacio porque las bolsas no traen)
+    print("¿Cuántos registros hay? "+str(totRegistros))
+
+    print("¿Cuántos fines de semana en el archivo? "+str(cont))
+    print("¿Cuántos días festivos hay en el archivo? "+str(contDiasFestivos))
+    print("¿Cuántos datos faltantes:? "+str(datosFaltantes))
+    score1=0.0
+    score1=0.0
+    if(registrosEsperados==totRegistros):
+        print("No hay datos perdidos")
+        exit()
+    elif(registrosEsperados!=totRegistros):
+        print("---Score--")
+        score1=(totRegistros/registrosEsperados)*100
+        print(score1, '%')
+        score2=((totRegistros-datosFaltantes)/registrosEsperados)*100
+        print(score2, '%')
+        print("---------")
+        festivos=pd.DataFrame(np.array(diasFestivosLista), columns=['columnaFestivos'])
+        finesD=pd.DataFrame(np.array(listFinesSemana), columns=['columnaFines'])
+        df.reset_index(level=['Date'], inplace=True)
+        for i in finesD.index:
+            selectorIndice=finesD['columnaFines'].loc[i]
+            #Borrar Fines de semana encontrados
+            df.drop(selectorIndice, inplace=True)
+
+        for i in datesHoliday.index:
+            df = df.append({'Date': datesHoliday['Date'].loc[i]}, ignore_index=True)
+        FinesSemanaTotales['F']=np.nan
+        dftTotal = dftTotal.set_index('Date')
+        FinesSemanaTotales.Dates=pd.to_datetime(FinesSemanaTotales.Dates, errors='coerce', format='%Y-%m-%d')
+        FinesSemanaTotales = FinesSemanaTotales.set_index('Dates')
+        for i in dftTotal.index:
+            if i in FinesSemanaTotales.index:
+                dftTotal.drop(i, inplace=True)
+
+        dfPrueba=df
+
+        dfPrueba.Date=pd.to_datetime(dfPrueba.Date, errors='coerce', format='%Y-%m-%d %H:%M:%S')
+        dfPrueba = dfPrueba.set_index('Date')
+
+        for i in dftTotal.index:
+            if i in dfPrueba.index:
+                dftTotal.drop(i, inplace=True)
+        #Retomar el index
+        dftTotal.reset_index(level=['Date'], inplace=True)
+        for i in dftTotal.index:
+            df = df.append({'Date': dftTotal['Date'].loc[i]}, ignore_index=True)
+        df.Date=pd.to_datetime(df.Date, errors='coerce',format='%Y-%m-%d %H:%M:%S')
+        df['Open']= pd.to_numeric(df.Open, errors='coerce')
+        df['High']= pd.to_numeric(df.High, errors='coerce')
+        df['Low']= pd.to_numeric(df.Low, errors='coerce')
+        df['Close']= pd.to_numeric(df.Close, errors='coerce')
+        df['Volume']= pd.to_numeric(df.Volume, errors='coerce')
+
+        #Borrar fechas duplicadas
+        df.drop_duplicates(subset=['Date'], inplace=True)
+        df=df.sort_values(["Date"])
+        df=df.reset_index(drop=True)
+        nan_rows = df[df.isnull().T.any().T]
+        xNa13=[] 
+
+        dfPanInterspline=df
+        dfPanInterspline.Date=pd.to_datetime(dfPanInterspline.Date, errors='coerce', format='%Y-%m-%d %H:%M:%S')
+        dfPanInterspline=dfPanInterspline.interpolate(method='spline', order=2, axis=0, limit_direction ='both')
+
+        for i in df.index:
+            if i in nan_rows.index:
+                xNa13.append(dfPanInterspline.iloc[i])  
+            else:
+                continue
+
+        dfNan13=pd.DataFrame(np.array(xNa13),columns=['Date','Open', 'High', 'Low','Close','Adj Close','Volume'])
+        print("---Fechas imputadas---")
+        #print(dfNan13.Date)
+        trace0 = go.Scatter(
+            x = df.Date,
+            y =df.High,
+            name = 'High-original',
+            line = dict(
+                color = '#FFDA8C',
+                width = 4)
+        )
+        trace13 = go.Scatter(
+            x = df.Date,
+            y =dfPanInterspline.High,
+            name = 'spline',
+            line = dict(
+                color = '#DC0B81',
+                width = 2,
+                dash = 'dot')
+        )
+
+        data = [trace0, trace13]
+        # Edit the layout
+        layout = dict(title = 'Close '+nombreBolsa,
+                      xaxis = dict(title = 'Years'),
+                      yaxis = dict(title = 'High'),
+                      )
+
+        fig = dict(data=data, layout=layout)
+        py.plot(fig, filename='styled-line')
+
+        df.to_csv('cleaning/'+nombreBolsa+'.csv', encoding='utf-8', index=False)
+        dfPanInterspline.to_csv('cleaning/'+nombreBolsa+'.csv', encoding='utf-8', index=False)
+        dfNan13.to_csv('cleaning/SplineImputados_'+nombreBolsa+'.csv', encoding='utf-8', index=False)
+except FileNotFoundError:
+    print("No se encuentra el archivo")
