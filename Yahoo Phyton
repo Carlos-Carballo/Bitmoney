@@ -3,18 +3,20 @@ from datetime import datetime, timedelta
 import pandas as pd 
 import numpy as np
 from pandas.tseries.holiday import USFederalHolidayCalendar as calendar
-import plotly.plotly as py
+import chart_studio.plotly as py
 import plotly.graph_objs as go
-import plotly
-plotly.tools.set_credentials_file(username='maryichelo1017', api_key='V8wzzUDUqZt2qnlulipY')
+import chart_studio
+
+chart_studio.tools.set_credentials_file(username='sacbe', api_key='YyuW1xjKew2FpqsOUAvr')
 
 nombreBolsa=''
 nombreBolsa=input("Nombre de la bolsa ")
 try:
     df=pd.read_csv('data/'+nombreBolsa+'.csv', parse_dates=True, index_col=0)
+    #df=pd.read_csv('data/BTC-USD.csv', parse_dates=True, index_col=0)
 
-    fechadesde = dt.datetime(2007, 1, 1)
-    fechahasta = dt.datetime(2018, 3, 29)
+    fechadesde = dt.datetime(2014, 9, 17)
+    fechahasta = dt.datetime(2020, 11, 18)
     print("Fechas")
     print(fechadesde)
     print(fechahasta)
@@ -47,14 +49,16 @@ try:
     datesHoliday.reset_index()
     formato = "%Y-%m-%d" 
     formato2='%Y-%m-%d %H:%M:%S'      
-    fechadesde = "2007-1-1"
-    fechahasta = "2018-3-29"    
+    fechadesde = "2014-9-17"
+    fechahasta = "2020-11-18"  
+    
     fechadesde = datetime.strptime(fechadesde, formato)
     fechahasta = datetime.strptime(fechahasta, formato)    
+        
     contFinesT=0
     listFinesSemanaTotales=[]
     while fechadesde <= fechahasta:
-        if datetime.weekday(fechadesde) == 5 or datetime.weekday(fechadesde) == 6 : 
+        if datetime.weekday(fechadesde) == 1 or datetime.weekday(fechadesde) == 7 : 
             contFinesT +=1
             fechaactual = fechadesde.strftime(formato2)
             for i in range(contadorFestivos):
@@ -123,6 +127,7 @@ try:
         festivos=pd.DataFrame(np.array(diasFestivosLista), columns=['columnaFestivos'])
         finesD=pd.DataFrame(np.array(listFinesSemana), columns=['columnaFines'])
         df.reset_index(level=['Date'], inplace=True)
+        
         for i in finesD.index:
             selectorIndice=finesD['columnaFines'].loc[i]
             #Borrar Fines de semana encontrados
@@ -134,6 +139,7 @@ try:
         dftTotal = dftTotal.set_index('Date')
         FinesSemanaTotales.Dates=pd.to_datetime(FinesSemanaTotales.Dates, errors='coerce', format='%Y-%m-%d')
         FinesSemanaTotales = FinesSemanaTotales.set_index('Dates')
+        
         for i in dftTotal.index:
             if i in FinesSemanaTotales.index:
                 dftTotal.drop(i, inplace=True)
@@ -146,6 +152,7 @@ try:
         for i in dftTotal.index:
             if i in dfPrueba.index:
                 dftTotal.drop(i, inplace=True)
+                
         #Retomar el index
         dftTotal.reset_index(level=['Date'], inplace=True)
         for i in dftTotal.index:
@@ -173,10 +180,9 @@ try:
                 xNa13.append(dfPanInterspline.iloc[i])  
             else:
                 continue
-
+        
         dfNan13=pd.DataFrame(np.array(xNa13),columns=['Date','Open', 'High', 'Low','Close','Adj Close','Volume'])
         print("---Fechas imputadas---")
-        #print(dfNan13.Date)
         trace0 = go.Scatter(
             x = df.Date,
             y =df.High,
@@ -208,5 +214,6 @@ try:
         df.to_csv('cleaning/'+nombreBolsa+'.csv', encoding='utf-8', index=False)
         dfPanInterspline.to_csv('cleaning/'+nombreBolsa+'.csv', encoding='utf-8', index=False)
         dfNan13.to_csv('cleaning/SplineImputados_'+nombreBolsa+'.csv', encoding='utf-8', index=False)
+
 except FileNotFoundError:
     print("No se encuentra el archivo")
