@@ -12,8 +12,6 @@ nombreBolsa=''
 nombreBolsa=input("Nombre de la bolsa ")
 try:
     df=pd.read_csv('data/'+nombreBolsa+'.csv', parse_dates=True, index_col=0)
-    #df=pd.read_csv('data/BTC-USD.csv', parse_dates=True, index_col=0)
-
     fechadesde = dt.datetime(2014, 9, 17)
     fechahasta = dt.datetime(2020, 11, 18)
     print("Fechas")
