@@ -6,7 +6,6 @@ from pandas.tseries.holiday import USFederalHolidayCalendar as calendar
 import chart_studio.plotly as py
 import plotly.graph_objs as go
 import chart_studio
-
 chart_studio.tools.set_credentials_file(username='sacbe', api_key='YyuW1xjKew2FpqsOUAvr')
 
 nombreBolsa=''
