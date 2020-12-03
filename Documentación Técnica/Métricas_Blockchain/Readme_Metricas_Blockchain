@@ -1,1 +1,10 @@
 Readme_Metricas_Blockchain
+Esta carpeta contiene detalles de documentacion tecnica breve de las herramientas utilizadas para la
+identificacion de metricas blockchain clave en la funcion basica "Analisis de Metricas" de BITMONEY.
+Contiene los siguientes documentos:
+Herramienta_Regresion_Multiple explicacion de conceptos basicos y aplicacion de regresion multiple para 
+generar un modelo Y = f(x) e identificar las variables mas importantes.
+Herramienta_Cluster_Conglomerado explicacion de conceptos basicos y aplicacion de metodos multivaridos con
+la herramienta Cluster (Conglomerado) en especifico K-means y la visualizacion del dendograma.
+Herramienta_Componentes_Principales explicacion de conceptos basicos y aplicacion de metodos multivaridos con
+la herramienta Componentes Principales su interpretación y visualizacion con Biplot.
