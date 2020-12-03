@@ -134,7 +134,7 @@ predictions = model.predict(imagen)
 score = tf.nn.softmax(predictions[0])
 #print(score)
 
-#n_cluster es un array con la cantidad de elemntos de cada cluster
+# n_cluster es un array con la cantidad de elemntos de cada cluster
 #En n_cluster el elemento cero del array es incertidumbre el uno es vende y el dos es compra.
 
 print("\033[1m {} \033[0m con 97% de exactitud.".format(etiqueta[pos[np.argmax(score)]]))
