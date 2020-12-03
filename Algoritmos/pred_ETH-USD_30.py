@@ -141,5 +141,5 @@ score = tf.nn.softmax(predictions[0])
 print("\033[1m {} \033[0m con 98% de exactitud.".format(etiqueta[pos[np.argmax(score)]]))
 print('Color: ',color[pos[np.argmax(score)]])
 
-#En n_cluster el elemento cero del array es incertidumbre el uno es vende y el dos es compra.
+# En n_cluster el elemento cero del array es incertidumbre el uno es vende y el dos es compra.
 print(n_cluster)
