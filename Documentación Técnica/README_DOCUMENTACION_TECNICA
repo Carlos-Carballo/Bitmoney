@@ -2,7 +2,15 @@ README_DOCUMENTACION_TECNICA
 Este espacio contine documentacion tecnica de las herramientas y metodologias usadas para crear las
 funciones basicas de nuestra solucion BITMONEY
 Contiene dos carpetas:
-Métricas_Blokchain contiene documentacion tecnicas de las herramientas usadas para identificar las metricas
+Métricas_Blokchain contiene documentacion tecnica de las herramientas usadas para identificar las metricas
 blockchain claves de la fuente coninmetrics.
 Propuesta_Solucion contiene una explicación resumida de las herramientas utilizadas de nuestra solución desde
 el punto de vista tecnico.
+
+This space contains technical documentation of the tools and methodologies used to create the
+basic functions of our BITMONEY solution
+It contains two folders:
+Metrics_Blokchain contains technical documentation of the tools used to identify metrics
+blockchain keys from the source coninmetrics.
+Propuesta_Solucion contains a summary explanation of the tools used in our solution from
+the technical point of view.
