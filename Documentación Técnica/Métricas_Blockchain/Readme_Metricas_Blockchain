@@ -8,3 +8,13 @@ Herramienta_Cluster_Conglomerado explicacion de conceptos basicos y aplicacion d
 la herramienta Cluster (Conglomerado) en especifico K-means y la visualizacion del dendograma.
 Herramienta_Componentes_Principales explicacion de conceptos basicos y aplicacion de metodos multivaridos con
 la herramienta Componentes Principales su interpretación y visualizacion con Biplot.
+
+This folder contains brief technical documentation details of the tools used for the
+Identification of key blockchain metrics in the basic function "Metrics Analysis" of BITMONEY.
+It contains the following documents:
+Herramienta_Regresion_Multiple explanation of basic concepts and application of multiple regression for
+generate a model Y = f (x) and identify the most important variables.
+Herramienta_Cluster_Conglomerado explanation of basic concepts and application of multivariate methods with
+the Cluster tool (Conglomerate) in specific K-means and the visualization of the dendrogram.
+Herramienta_Componentes_Principales explanation of basic concepts and application of multivariate methods with
+the Main Components tool its interpretation and visualization with Biplot.
